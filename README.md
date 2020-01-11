@@ -21,7 +21,7 @@ After training, we could see that the model is tuned to a higher accuracy with s
 <a href="https://imgflip.com/gif/3lr975"><img src="https://i.imgflip.com/3lr975.gif" title="made at imgflip.com"/></a> <br>
 
 **Why don't you use grid search since there is only one hyperparameter to tune?** <br>
-- This is for the convenience of visualization. If there are two hyperparameters, 3D visualization cost a lot computing power. Over two hyperparameters, we might not be able to show the optimization process so intuitively
+- This is for the convenience of visualization. If there are two hyperparameters, 3D visualization costs a lot of computing power. Over two hyperparameters, we might not be able to show the optimization process so intuitively
 
 ### Functionality
 #### Why deep Q learning? <br>
@@ -33,6 +33,6 @@ After training, we could see that the model is tuned to a higher accuracy with s
 - Gamma: 0.9
 - Game Over: Once the agent steps to the edges at the two ends or stay idles after several steps. 
 
-#### Accuracy meaturement <br>
-- We split the data into training and testing data. By inputing the hyperparameter values returned from deep Q learning model to PLS model, we calculate R square value as the accuracy of the PLS model.
+#### Accuracy measurement <br>
+- We split the data into training and testing data. By inputting the hyperparameter values returned from the deep Q learning model to the PLS model, we calculate R square value as the accuracy of the PLS model.
 

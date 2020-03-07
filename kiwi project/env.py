@@ -29,7 +29,7 @@ class environment():
         y = r2_score(Y_pred, self.Y_test)
         return y
 
-    def observe(self, x, action):
+    def observe(self, x, action, step):
         observation_ = []
         x_list = x + np.array(self.detect_range)
 
@@ -46,15 +46,16 @@ class environment():
 
         observation_ = np.array(observation_) - self.cur_pos[1]
         observation_ = np.append(observation_, x/40000)
+        observation_ = np.append(observation_, step)
         return observation_
 
-    def step(self, action):
+    def step(self, action, s):
         '''
         Return observation_, reward, done
         '''
         x = self.cur_pos[0]
         if x + action > self.grid[-1] or x + action < self.grid[0]:
-            observation_ = np.zeros(len(self.detect_range))
+            observation_ = np.zeros(len(self.detect_range)+1)
             observation_ = np.append(observation_, x/40000)
             return observation_, self.cur_pos[1], True
 
@@ -72,20 +73,23 @@ class environment():
         self.cur_pos = (x, y)
 
 
-        observation_ = self.observe(x, action)
+        observation_ = self.observe(x, action, s)
 
 
-        if len(self.st_history) < self.idol_steps:
-            self.st_history.append(y)
-            if len(self.st_history) == 0:
-                reward = 0
-            else:
-                reward = y
-        else:
+        if len(self.st_history) >= self.idol_steps:
             self.st_history.pop(0)
-            self.st_history.append(y)
-            reward = y
+        self.st_history.append(y)
+        # reward = y
+        # print("R1: reward = y")
+        # reward = y + (1-y) * (2*y - max(self.st_history)-min(self.st_history))
+        # print("R2: reward = y + (1-y) * max(self.st_history) -min(self.st_history)")
+        alpha = 0.5
+        reward = alpha*(y + (1-y) * (2*y - max(self.st_history)-min(self.st_history))) + \
+                (1-alpha) * (1/(1+np.exp((s-150)/20)))
+        # print("R3: alpha*(y + (1-y) * (2*y - max(self.st_history)-min(self.st_history))) + (1-alpha) * (1/(1+e**((s-150)/20)))")
 
+        # print("***Short-Term History", self.st_history)
+        # print("***Idle activity: ", max(self.st_history) - min(self.st_history))
         done = False
         if len(self.st_history) >= self.idol_steps:
             if max(self.st_history) - min(self.st_history) < self.idol_range:
@@ -100,7 +104,7 @@ class environment():
             x = pos
         self.cur_pos = (x, self.calAccuracy(x))
         self.st_history = []
-        observation_ = self.observe(x, 0)
+        observation_ = self.observe(x, 0, 0)
         return observation_
 
     def showCurPos(self):
